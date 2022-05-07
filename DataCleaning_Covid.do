@@ -179,6 +179,13 @@ drop _merge */
 clear 
 use facilities_complete.dta
 
+* Getting total number of resident deaths from covid
+
+*keep if date ==22724
+
+*egen newvar = sum(residentstotalcovid19deaths)
+
+
 * Keeping only relevant variables
 keep federalprovidernumber state residentsweeklyconfirmedcovid19 residentstotalconfirmedcovid19 residentsweeklyalldeaths residentstotalalldeaths residentsweeklycovid19deaths residentstotalcovid19deaths numberofallbeds totalnumberofoccupiedbeds weeklyresidentconfirmedcovid19ca weeklyresidentcovid19deathsper10 totalresidentconfirmedcovid19cas totalresidentcovid19deathsper100 initialconfirmedcovid19casethisw numberofresidentswithanewpositiv fips id date year day mo shortageofnursingstaff shortageofclinicalstaff shortageofaides shortageofotherstaff v142 v163 alcoholbasedhandrubabhravailable alcoholbasedhandrubabhrnolongera facemasksstrategyforoptimization eyeprotectionstrategyforoptimiza gownsstrategyforoptimization glovesstrategyforoptimization facemasksnolongeravailablein7day eyeprotectionnolongeravailablein gownsnolongeravailablein7days glovesnolongeravailablein7days stafftotalconfirmedcovid19 stafftotalcovid19deaths numberofallhealthcarepersonnelel
 
@@ -403,7 +410,8 @@ save covid_nursinghomes_complete, replace
 
 
 
-
+clear
+use covid_nursinghomes_complete.dta 
 
 
 
