@@ -408,112 +408,105 @@ save covid_nursinghomes_complete, replace
 
 
 
-
+*--------------------------------------------------------------------------------
+*Creating data for cross-sectional analysis
+*--------------------------------------------------------------------------------
 
 clear
 use covid_nursinghomes_complete.dta 
 
+* Keeping relvent dates to create change variable
+keep if date == 22059 | date == 22171 | date == 22255 | date == 22395 | date == 22724
+
+
+* Dropping missing variables ?
+drop if date == 22171 & date[_n-1] != 22059
+drop if date == 22255 & date[_n-1] != 22171
+drop if date == 22395 & date[_n-1] != 22255
+drop if date == 22724 & date[_n-1] != 22395 
+
+
+foreach i in "numberofallbeds" "adjustedtotalnursestaffinghoursp" "adjustedtotalnursestaffinghoursp" {
+	
+replace `i' = `i'[_n-1] if `i' ==. & date == 22171 & date[_n-1] == 22059 & federalprovidernumber == federalprovidernumber[_n-1]
+replace `i' = `i'[_n-1] if `i' ==. & date == 22255 & date[_n-1] == 22171 & federalprovidernumber == federalprovidernumber[_n-1]
+replace `i' = `i'[_n-1] if `i' ==. & date == 22395 & date[_n-1] == 22255 & federalprovidernumber == federalprovidernumber[_n-1]
+replace `i' = `i'[_n-1] if `i' ==. & date == 22724 & date[_n-1] == 22395 & federalprovidernumber == federalprovidernumber[_n-1]
+
+replace `i' = `i'[_n+1] if `i' ==. & date == 22171 & date[_n+1] == 22255 & federalprovidernumber == federalprovidernumber[_n+1]
+replace `i' = `i'[_n+1] if `i' ==. & date == 22255 & date[_n+1] == 22395 & federalprovidernumber == federalprovidernumber[_n+1]
+replace `i' = `i'[_n+1] if `i' ==. & date == 22395 & date[_n+1] == 22724 & federalprovidernumber == federalprovidernumber[_n+1]
+}
+
+* Generating non-covid deaths data
+gen excessdeaths = totaldeaths - covid_deaths
+
+* Generating change in covid cases per capita at county
+gen change_countycasespcp = county_cases_pcp - county_cases_pcp[_n-1] if date == 22171 | date == 22255 | date == 22395 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+* Generating change in dependent variable of interest
+gen changeexcessdeaths = (excessdeaths - excessdeaths[_n-1])/numberofallbeds*100 if date == 22171 | date == 22255 | date == 22395 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changetotaldeaths_perhundredbeds = (totaldeaths - totaldeaths[_n-1])/numberofallbeds*100 if date == 22171 | date == 22255 | date == 22395 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changecoviddeaths_perhundredbeds = (covid_deaths- covid_deaths[_n-1])/numberofallbeds*100 if date == 22171 | date == 22255 | date == 22395 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changecovidcases_perhundredbeds = (residentstotalconfirmedcovid19 - residentstotalconfirmedcovid19[_n-1])/numberofallbeds*100 if date == 22171 | date == 22255 | date == 22395 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changestaffcases_FTWorkers = (stafftotalconfirmedcovid19- stafftotalconfirmedcovid19[_n-1])/(adjustedtotalnursestaffinghoursp*totalnumberofoccupiedbeds)*40*100 if date == 22171 | date == 22255 | date == 22395 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changestaffdeaths_FTWorkers = (stafftotalcovid19deaths - stafftotalcovid19deaths[_n-1])/(adjustedtotalnursestaffinghoursp*totalnumberofoccupiedbeds)*40*100 if date == 22171 | date == 22255 | date == 22395 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changestaffcases_perhundredbeds = (stafftotalconfirmedcovid19 - stafftotalconfirmedcovid19[_n-1])/numberofallbeds*100 if date == 22171 | date == 22255 | date == 22395 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changestaffdeaths_perhundredbeds = (stafftotalcovid19deaths - stafftotalcovid19deaths[_n-1])/numberofallbeds*100 if date == 22171 | date == 22255 | date == 22395 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+*checking for negative numbers
+count if changetotaldeaths_perhundredbeds<0
+count if changecoviddeaths_perhundredbeds<0
+count if changecovidcases_perhundredbeds<0
+count if changestaffcases_FTWorkers<0
+count if changestaffdeaths_FTWorkers<0
+count if changestaffcases_perhundredbeds<0
+count if changestaffdeaths_perhundredbeds<0
+
+* Saving data for each time period
+
+preserve 
+keep if date == 22171
+save Sep2020_NB_Data, replace
+restore
+
+preserve 
+keep if date == 22255
+save Dec2020_NB_Data, replace
+restore
+
+preserve 
+keep if date == 22395
+save April2021_NB_Data, replace
+restore
+
+preserve 
+keep if date == 22724
+save March2022_NB_Data, replace
+restore
 
 
 
 /*
+rename totalresidentconfirmedcovid19cas cases_perthousand
+rename totalresidentcovid19deathsper100 coviddeaths_perthousand
 
-*------------------------------------------------------------------------------
-* Effect of CON on how new facility is
+totalresidentconfirmedcovid19cas
+totalresidentcovid19deathsper100
 
-* Keeping only one observation per facility 
+totaldeaths = residents total deaths 
 
-* Cross sectional on how old facilities are
-*keep if date == 22647 
-*reg days_since_founded con popestimate2000 
-
-ssc install reghdfe
-
-
-clear
-use covid_nursinghomes_complete.dta 
-
-sort federalprovidernumber date
-
-* deviding data into different covid periods
-
-* from 05/24/2020 - 09/13/2020
-clear
-use covid_nursinghomes_complete.dta 
-drop if date > 22171
-
-* from 09/13/2020 - 12/06/2020
-clear
-use covid_nursinghomes_complete.dta 
-drop if date < 22171
-drop if date > 22255
-
-* from 12/06/2020 - 04/25/2021
-clear
-use covid_nursinghomes_complete.dta 
-drop if date < 22255
-drop if date > 22395
-
-* Since 04/25/2021
-clear
-use covid_nursinghomes_complete.dta 
-drop if date < 22395
-
-
-* droping first week because all previous covid cases were reported on that day.
-drop if date == 22059
-
-
-
-
-*Weekly cases per 1000 residents
-*reg weeklycases_perthousand forprofit weeks_cases_pcp population PerCapitaIncome five_star four_star three_star two_star i.date, vce(cluster id)
-
-*total cases per 1000 residents
-reg cases_perthousand forprofit weeks_cases_pcp population PerCapitaIncome five_star four_star three_star two_star i.date, vce(cluster id)
-
-*Weekly deaths per 100 residents 
-*reg weeklydeaths_perthousand forprofit weeks_cases_pcp population PerCapitaIncome five_star four_star three_star two_star i.date, vce(cluster id)
-
-*total Deaths per 1000 residents
-reg coviddeaths_perthousand forprofit weeks_cases_pcp population PerCapitaIncome five_star four_star three_star two_star i.date, vce(cluster id)
-
-*total excess deaths per 1000 residents
-reg excess_deaths forprofit weeks_cases_pcp population PerCapitaIncome five_star four_star three_star two_star i.date, vce(cluster fips)
-
-
-
-
-
-
-*____________________________________________________________________________________________________________________________________________________
-
-* Vaccination percentage
-reg resident_nomedicalcontra_pctvacc forprofit popestimate2000 PerCapitaIncome five_star four_star three_star two_star i.date, vce(cluster id)
-
-reg staff_nomedicalcontra_pctvacc forprofit popestimate2000 PerCapitaIncome five_star four_star three_star two_star i.date, vce(cluster id)
-
-* Other strategies 
-*reg alcoholbasedhandrubabhravailable forprofit popestimate2000 PerCapitaIncome five_star four_star three_star two_star i.date, vce(cluster id)
-
-* alcoholbasedhandrubabhravailable alcoholbasedhandrubabhrnolongera facemasksstrategyforoptimization eyeprotectionstrategyforoptimiza gownsstrategyforoptimization glovesstrategyforoptimization facemasksnolongeravailablein7day eyeprotectionnolongeravailablein gownsnolongeravailablein7days glovesnolongeravailablein7days
-
-*Initial case
-*reg initial_case forprofit nonprofit con overallrating i.date i.id, vce(cluster id)
-
-*ocupancy rates
-reg  ocupancy nonprofit con overallrating i.date i.id, vce(cluster id)
-
-reg  ocupancy five_star four_star three_star two_star i.date i.id, vce(cluster id)
-
-* con on for profit
-reg gov con four_star three_star two_star one_star i.date i.id, vce(cluster id)
-
-reg forprofit con overallrating i.date i.id, vce(cluster id)
-
-save cleaned_covid_data.dta, replace
-
-* effect on quality
-
-
+stafftotalconfirmedcovid19
+stafftotalcovid19deaths
 */
+
+
+
+

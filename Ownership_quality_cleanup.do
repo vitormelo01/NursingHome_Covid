@@ -106,7 +106,7 @@ format date_weeks %tw
 
 
 * Keep only variables that matter
-keep federalprovidernumber ownershiptype overallrating qmrating providerzipcode date_weeks adjustedrnstaffinghoursperreside adjustedtotalnursestaffinghoursp
+keep federalprovidernumber ownershiptype overallrating qmrating providerzipcode date_weeks adjustedrnstaffinghoursperreside adjustedtotalnursestaffinghoursp averagenumberofresidentsperday
 
 save ownership_quality_cleaned, replace
 
