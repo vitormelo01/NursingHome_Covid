@@ -401,13 +401,6 @@ replace ownership_changed = 0 if ownership_changed == .
 save covid_nursinghomes_complete, replace
 
 
-
-
-
-
-
-
-
 *--------------------------------------------------------------------------------
 *Creating data for cross-sectional analysis
 *--------------------------------------------------------------------------------
