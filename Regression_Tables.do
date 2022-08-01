@@ -8,28 +8,29 @@ cd "$directory\Data"
 ************************ CREATING REGRESSION TABLES ************************************
 *--------------------------------------------------------------------------------------*
 
+global controls urban unemp_2020 median_income_2020 pct_lesshighschool pct_bachelors poverty_2020 pop
 
 ************************ Resident Covid Cases ************************************
 *--------------------------------------------------------------------------------------*
 
 clear
 use Sep2020_NB_Data.dta
-nbreg changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using cases_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
 
 clear
 use Dec2020_NB_Data.dta
-nbreg changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using cases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
 
 clear
 use April2021_NB_Data.dta
-nbreg changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using cases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
 
 clear
 use March2022_NB_Data.dta
-nbreg changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using cases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
 
 ************************ Resident Covid Deaths ************************************
@@ -37,22 +38,22 @@ outreg2 using cases_file, append tex label keep(forprofit five_star four_star th
 
 clear
 use Sep2020_NB_Data.dta
-nbreg changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using deaths_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 clear
 use Dec2020_NB_Data.dta
-nbreg changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using deaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 clear
 use April2021_NB_Data.dta
-nbreg changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using deaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 clear
 use March2022_NB_Data.dta
-nbreg changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using deaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 
@@ -61,22 +62,22 @@ outreg2 using deaths_file, append tex label keep(forprofit five_star four_star t
 
 clear
 use Sep2020_NB_Data.dta
-nbreg changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using excess_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 clear
 use Dec2020_NB_Data.dta
-nbreg changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using excess_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 clear
 use April2021_NB_Data.dta
-nbreg changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using excess_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 clear
 use March2022_NB_Data.dta
-nbreg changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using excess_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 ************************ Resident total deaths ************************************
@@ -84,22 +85,22 @@ outreg2 using excess_file, append tex label keep(forprofit five_star four_star t
 
 clear
 use Sep2020_NB_Data.dta
-nbreg changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using totaldeaths_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 clear
 use Dec2020_NB_Data.dta
-nbreg changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using totaldeaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 clear
 use April2021_NB_Data.dta
-nbreg changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using totaldeaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 clear
 use March2022_NB_Data.dta
-nbreg changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using totaldeaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 ************************ Staff Covid-19 Cases per 100 Full Time Staff ************************************
@@ -107,39 +108,39 @@ outreg2 using totaldeaths_file, append tex label keep(forprofit five_star four_s
 
 clear
 use Sep2020_NB_Data.dta
-nbreg changestaffcases_FTWorkers forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changestaffcases_FTWorkers forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using staffcases_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 clear
 use Dec2020_NB_Data.dta
-nbreg changestaffcases_FTWorkers forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changestaffcases_FTWorkers forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using staffcases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 clear
 use April2021_NB_Data.dta
-nbreg changestaffcases_FTWorkers forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changestaffcases_FTWorkers forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using staffcases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 clear
 use March2022_NB_Data.dta
-nbreg changestaffcases_FTWorkers forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changestaffcases_FTWorkers forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using staffcases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 
 
-
 /*
+
 ************************ Staff Covid-19 Deaths per 100 Full Time Staff ************************************
 *--------------------------------------------------------------------------------------*
 
 clear
 use Sep2020_NB_Data.dta
-nbreg changestaffdeaths_FTWorkers forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster id)
+nbreg changestaffdeaths_FTWorkers forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster id)
 outreg2 using staffcases_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 clear
 use Dec2020_NB_Data.dta
-nbreg changestaffdeaths_FTWorkers forprofit five_star four_star three_star two_star change_countycasespcp i.id, vce(cluster fips)
+nbreg changestaffdeaths_FTWorkers forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
 outreg2 using staffcases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 clear
@@ -163,6 +164,104 @@ outreg2 using staffcases_file, append tex label keep(forprofit five_star four_st
 
 
 
+**********************************************************************************************************
+**************************************** Robustness Checks ***********************************************
+**********************************************************************************************************
+
+***** Negative binomial with no fixed effects ****
+
+************************ Resident Covid Cases ************************************
+*--------------------------------------------------------------------------------------*
+
+clear
+use Sep2020_NB_Data.dta
+nbreg changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using cases_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
+
+clear
+use Dec2020_NB_Data.dta
+nbreg changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using cases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
+
+clear
+use April2021_NB_Data.dta
+nbreg changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using cases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
+
+clear
+use March2022_NB_Data.dta
+nbreg changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using cases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
+
+************************ Resident Covid Deaths ************************************
+*--------------------------------------------------------------------------------------*
+
+clear
+use Sep2020_NB_Data.dta
+nbreg changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using deaths_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use Dec2020_NB_Data.dta
+nbreg changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using deaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use April2021_NB_Data.dta
+nbreg changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using deaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use March2022_NB_Data.dta
+nbreg changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using deaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+
+************************ Resident excess deaths ************************************
+*--------------------------------------------------------------------------------------*
+
+clear
+use Sep2020_NB_Data.dta
+nbreg changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using excess_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use Dec2020_NB_Data.dta
+nbreg changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using excess_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use April2021_NB_Data.dta
+nbreg changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using excess_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use March2022_NB_Data.dta
+nbreg changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using excess_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+************************ Resident total deaths ************************************
+*--------------------------------------------------------------------------------------*
+
+clear
+use Sep2020_NB_Data.dta
+nbreg changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using totaldeaths_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use Dec2020_NB_Data.dta
+nbreg changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using totaldeaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use April2021_NB_Data.dta
+nbreg changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using totaldeaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use March2022_NB_Data.dta
+nbreg changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using totaldeaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 
 
@@ -175,8 +274,306 @@ outreg2 using staffcases_file, append tex label keep(forprofit five_star four_st
 
 
 
+***** Poisson  Model ****
+
+************************ Resident Covid Cases ************************************
+*--------------------------------------------------------------------------------------*
+
+clear
+use Sep2020_NB_Data.dta
+poisson changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using cases_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
+
+clear
+use Dec2020_NB_Data.dta
+poisson changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using cases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
+
+clear
+use April2021_NB_Data.dta
+poisson changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using cases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
+
+clear
+use March2022_NB_Data.dta
+poisson changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using cases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
+
+************************ Resident Covid Deaths ************************************
+*--------------------------------------------------------------------------------------*
+
+clear
+use Sep2020_NB_Data.dta
+poisson changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using deaths_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use Dec2020_NB_Data.dta
+poisson changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using deaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use April2021_NB_Data.dta
+poisson changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using deaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use March2022_NB_Data.dta
+poisson changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using deaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 
+************************ Resident excess deaths ************************************
+*--------------------------------------------------------------------------------------*
+
+clear
+use Sep2020_NB_Data.dta
+poisson changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using excess_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use Dec2020_NB_Data.dta
+poisson changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using excess_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use April2021_NB_Data.dta
+poisson changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using excess_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use March2022_NB_Data.dta
+poisson changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using excess_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+************************ Resident total deaths ************************************
+*--------------------------------------------------------------------------------------*
+
+clear
+use Sep2020_NB_Data.dta
+poisson changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using totaldeaths_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use Dec2020_NB_Data.dta
+poisson changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using totaldeaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use April2021_NB_Data.dta
+poisson changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using totaldeaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use March2022_NB_Data.dta
+poisson changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using totaldeaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+
+
+
+
+***** OLS  Model ****
+
+************************ Resident Covid Cases ************************************
+*--------------------------------------------------------------------------------------*
+
+clear
+use Sep2020_NB_Data.dta
+reg changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using cases_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
+
+clear
+use Dec2020_NB_Data.dta
+reg changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using cases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
+
+clear
+use April2021_NB_Data.dta
+reg changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using cases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
+
+clear
+use March2022_NB_Data.dta
+reg changecovidcases_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using cases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
+
+************************ Resident Covid Deaths ************************************
+*--------------------------------------------------------------------------------------*
+
+clear
+use Sep2020_NB_Data.dta
+reg changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using deaths_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use Dec2020_NB_Data.dta
+reg changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using deaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use April2021_NB_Data.dta
+reg changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using deaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use March2022_NB_Data.dta
+reg changecoviddeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using deaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+
+************************ Resident excess deaths ************************************
+*--------------------------------------------------------------------------------------*
+
+clear
+use Sep2020_NB_Data.dta
+reg changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using excess_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use Dec2020_NB_Data.dta
+reg changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using excess_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use April2021_NB_Data.dta
+reg changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using excess_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use March2022_NB_Data.dta
+reg changeexcessdeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using excess_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+************************ Resident total deaths ************************************
+*--------------------------------------------------------------------------------------*
+
+clear
+use Sep2020_NB_Data.dta
+reg changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using totaldeaths_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use Dec2020_NB_Data.dta
+reg changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using totaldeaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use April2021_NB_Data.dta
+reg changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using totaldeaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use March2022_NB_Data.dta
+reg changetotaldeaths_perhundredbeds forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using totaldeaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+
+
+
+
+
+
+***** OLS  Model with LOG (deaths + 1) ****
+
+/*
+gen log_cases = log(changecovidcases_perhundredbeds + 1)
+gen log_coviddeaths = log(changecoviddeaths_perhundredbeds + 1)
+gen log_noncovid = log(changeexcessdeaths + 1)
+gen log_totaldeaths = log(changetotaldeaths_perhundredbeds + 1) */
+
+************************ Resident Covid Cases ************************************
+*--------------------------------------------------------------------------------------*
+
+clear
+use Sep2020_NB_Data.dta
+reg log_cases forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using cases_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
+
+clear
+use Dec2020_NB_Data.dta
+reg log_cases forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using cases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
+
+clear
+use April2021_NB_Data.dta
+reg log_cases forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using cases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
+
+clear
+use March2022_NB_Data.dta
+reg log_cases forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using cases_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) nocons
+
+************************ Resident Covid Deaths ************************************
+*--------------------------------------------------------------------------------------*
+
+clear
+use Sep2020_NB_Data.dta
+reg log_coviddeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using deaths_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use Dec2020_NB_Data.dta
+reg log_coviddeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using deaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use April2021_NB_Data.dta
+reg log_coviddeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using deaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use March2022_NB_Data.dta
+reg log_coviddeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using deaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+
+************************ Resident excess deaths ************************************
+*--------------------------------------------------------------------------------------*
+
+clear
+use Sep2020_NB_Data.dta
+reg log_noncovid forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using excess_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use Dec2020_NB_Data.dta
+reg log_noncovid forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using excess_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use April2021_NB_Data.dta
+reg log_noncovid forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using excess_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use March2022_NB_Data.dta
+reg log_noncovid forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using excess_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+************************ Resident total deaths ************************************
+*--------------------------------------------------------------------------------------*
+
+clear
+use Sep2020_NB_Data.dta
+reg log_totaldeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using totaldeaths_file, replace tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use Dec2020_NB_Data.dta
+reg log_totaldeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using totaldeaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use April2021_NB_Data.dta
+reg log_totaldeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using totaldeaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
+
+clear
+use March2022_NB_Data.dta
+reg log_totaldeaths forprofit five_star four_star three_star two_star change_countycasespcp $controls i.id, vce(cluster fips)
+outreg2 using totaldeaths_file, append tex label keep(forprofit five_star four_star three_star two_star change_countycasespcp) addtext(State FE, YES) nocons
 
 
 

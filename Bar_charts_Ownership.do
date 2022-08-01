@@ -40,9 +40,17 @@ replace gov = 1 if ownershiptype == "Government - City/county"
 replace gov = 1 if ownershiptype == "Government - County"
 replace gov = 1 if ownershiptype == "Government - Federal"
 
+sum ones if forprofit == 1
+
+
+
+
+
 gen own = 1 
 replace own = 2 if nonprofit == 1
 replace own = 3 if gov == 1
+
+collapse (sum) ones, by(own)
 
 gen inutil = 10000 - ones 
 sort own inutil
