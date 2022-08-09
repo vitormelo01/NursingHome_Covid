@@ -1,4 +1,4 @@
-cd "C:\Users\vitor\OneDrive\Research_Resources\Covid_NursingHomes\Data"
+cd "C:\Users\vmelo\OneDrive\Research_Resources\Covid_NursingHomes\Data"
 * Converting updated safeway data into dta format
 clear 
 insheet using "safegraph_added.csv"
@@ -200,30 +200,25 @@ gen robustvisits_PctChange = (robust_visits - mean_robustvisits_2019)/mean_robus
 
 * Regression for visitors
 preserve
-keep if y == 2020
-drop if m < 3
+drop if y < 2020
+drop if m < 3 & y == 2020
 sum visitor_PctChange
 reg visitor_PctChange forprofit i.d  i.id five_star four_star three_star two_star monthly_county_cases $dem_controls, cluster(id)
+outreg2 using visitors_file, replace tex label keep(forprofit five_star four_star three_star two_star monthly_county_cases) addtex(Demographic Controls, YES, State FE, YES, Monthly FE, YES) nocons
 restore
 
-* Regression for robust_visitors
+* Regression for robust_visitors1
 preserve
 keep if y == 2020
 drop if m < 3
-
 sum robustvisits_PctChange
 reg robustvisits_PctChange forprofit i.d  i.id five_star four_star three_star two_star monthly_county_cases $dem_controls, cluster(id)
 restore
 
 
+
 * Saving complete data 
 save safegraph_merged, replace
-
-
-
-
-
-
 
 
 
