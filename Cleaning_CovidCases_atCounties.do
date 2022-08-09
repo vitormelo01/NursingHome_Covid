@@ -67,7 +67,7 @@ save combined_countycovid, replace
 * Keeping only relvant data for study
 clear
 use combined_countycovid
-drop if year < 121
+*drop if year < 121
 
 * Generating weekly covid deaths and cases per 1000 residents
 gen weeks_cases = total_cases - total_cases[_n-7]
@@ -76,11 +76,27 @@ gen weeks_covid_deaths = total_covid_deaths - total_covid_deaths[_n-7]
 gen weeks_cases_pcp = weeks_cases/population*1000
 gen weeks_covid_deaths_pcp = weeks_covid_deaths/population*1000
 
+save countycovid_complete, replace
 
+
+* Get data into monthly format
 rename year date2
 gen date = date2 + 21931
+gen date3 = date
+format date3 %d
+rename date3 date_formated
+generate m=month(date_formated) 
+generate d=day(date_formated) 
+generate y=year(date_formated) 
 
-save countycovid_complete
+* creating covid cases this month
+keep if d == 1 
+gen monthly_county_cases = total_cases[_n+1] - total_cases if fips == fips[_n+1]
+gen monthly_county_deaths = total_covid_deaths[_n+1] - total_covid_deaths if fips == fips[_n+1]
+
+save monthly_countycovid
+
+
 
 
 

@@ -1,4 +1,4 @@
-cd "C:\Users\vmelo\OneDrive\Research_Resources\Covid_NursingHomes\Data"
+cd "C:\Users\vitor\OneDrive\Research_Resources\Covid_NursingHomes\Data"
 * Converting updated safeway data into dta format
 clear 
 insheet using "safegraph_added.csv"
@@ -166,25 +166,27 @@ replace mean_visitor_2019 =  mean_visitor_2019[_n-1] if y>2019 & providernumber[
 gen visits_PctChange = (raw_visit_counts - mean_visits_2019)/mean_visits_2019*100 
 gen visitor_PctChange = (raw_visitor_counts - mean_visitor_2019)/mean_visitor_2019*100 
 
-* Regression for visits
-preserve
-keep if y == 2020
-drop if m < 4
-*replace visits_PctChange = abs(visits_PctChange)
-sum visits_PctChange
-reg visits_PctChange forprofit i.d  i.id five_star four_star three_star two_star, cluster(id)
-restore
+* Merging with fips code data
+rename providerzipcode zip
+merge m:m zip using ZIP_CountyFIPs.dta
+rename stcountyfp fips
+keep if _merge == 3
+drop _merge
 
-* Regression for visitors
-preserve
-keep if y == 2020
-drop if m < 4
-sum visitor_PctChange
-reg visitor_PctChange forprofit i.d  i.id five_star four_star three_star two_star, cluster(id)
-restore
+* merging with demographic variables data
+merge m:m fips using DemographicData_Complete.dta
+keep if _merge == 3
+drop _merge 
+
+* Merging with monthly county covid cases
+merge m:1 fips m y using monthly_countycovid.dta
+
+
+global dem_controls "urban unemp_2020 median_income_2020 pct_lesshighschool pct_bachelors poverty_2020 pop"
 
 * Creating robust_visits - defined as people who visted for more than 10min but less that 4h
 gen robust_visits = eleven_twenty + twentyone_sixty + sixtyone_onetwenty + onetwentyone_twoforty
+sort providernumber y m 
 
 
 * Generating variable with 2019 mean robust_visits for each facility 
@@ -194,25 +196,40 @@ replace mean_robustvisits_2019 = . if y != 2019
 replace mean_robustvisits_2019 = . if m != 12
 replace mean_robustvisits_2019 =  mean_robustvisits_2019[_n-1] if y>2019 & providernumber[_n-1] == providernumber
 gen robustvisits_PctChange = (robust_visits - mean_robustvisits_2019)/mean_robustvisits_2019*100 
+
+
+* Regression for visitors
+preserve
+keep if y == 2020
+drop if m < 3
+sum visitor_PctChange
+reg visitor_PctChange forprofit i.d  i.id five_star four_star three_star two_star monthly_county_cases $dem_controls, cluster(id)
+restore
+
 * Regression for robust_visitors
 preserve
 keep if y == 2020
-drop if m < 4
+drop if m < 3
+
 sum robustvisits_PctChange
-reg robustvisits_PctChange forprofit i.d  i.id five_star four_star three_star two_star, cluster(id)
+reg robustvisits_PctChange forprofit i.d  i.id five_star four_star three_star two_star monthly_county_cases $dem_controls, cluster(id)
 restore
 
 
-
-
-
-
-
-
-
-
 * Saving complete data 
-save safegraph_merged 
+save safegraph_merged, replace
+
+
+
+
+
+
+
+
+
+
+
+
 
 clear
 use safegraph_merged.dta
