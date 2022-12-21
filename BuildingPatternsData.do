@@ -10,7 +10,7 @@ rename v27 sixtyone_onetwenty
 rename v28 onetwentyone_twoforty
 rename v29 more_twoforty
 
-save safegraph_added
+save safegraph_added, replace
 
 
 *Merging provide rnumbers data with safegraph data
@@ -197,14 +197,34 @@ replace mean_robustvisits_2019 = . if m != 12
 replace mean_robustvisits_2019 =  mean_robustvisits_2019[_n-1] if y>2019 & providernumber[_n-1] == providernumber
 gen robustvisits_PctChange = (robust_visits - mean_robustvisits_2019)/mean_robustvisits_2019*100 
 
+save forprofit_visitors.dta, replace
+* Sum stats for visotrs and visits
+clear 
+use forprofit_visitors.dta
+drop if y < 2020
+drop if m < 3 & y == 2020
+reg visitor_PctChange forprofit i.d i.id five_star four_star three_star two_star monthly_county_cases $dem_controls, cluster(id)
+gen category = .
+replace category = 1 if forprofit==1
+replace category = 2 if nonprofit==1
+replace category = 3 if gov == 1
+
+
+
+
+
 
 * Regression for visitors
-preserve
+
 drop if y < 2020
 drop if m < 3 & y == 2020
 sum visitor_PctChange
 reg visitor_PctChange forprofit i.d  i.id five_star four_star three_star two_star monthly_county_cases $dem_controls, cluster(id)
 outreg2 using visitors_file, replace tex label keep(forprofit five_star four_star three_star two_star monthly_county_cases) addtex(Demographic Controls, YES, State FE, YES, Monthly FE, YES) nocons
+
+bysort 
+
+
 restore
 
 * Regression for robust_visitors1
@@ -219,6 +239,20 @@ restore
 
 * Saving complete data 
 save safegraph_merged, replace
+
+clear 
+use safegraph_merged
+
+drop if d <723
+drop if d >734
+
+collapse (mean) visitor_PctChange robustvisits_PctChange, by(providernumber)
+rename providernumber federalprovidernumber
+
+save average_visits_reduction, replace
+
+
+
 
 
 

@@ -1,9 +1,18 @@
+cd "C:\Users\vmelo\OneDrive\Research_Resources\Covid_NursingHomes\Data"
+
 
 * Setting Env Variables
-global directory: env CovidProject
+*global directory: env CovidProject
 
 * Setting Directory
-cd "$directory\Data"
+*cd "$directory\Data"
+
+* coverting facility controls to dta format
+clear
+insheet using "Controls_NH_2020.csv"
+save Controls_NH_2020, replace
+
+
 
 * Creating dta files
 clear
@@ -400,6 +409,34 @@ replace ownership_changed = 0 if ownership_changed == .
 * Saving data
 save covid_nursinghomes_complete, replace
 
+clear
+use Controls_NH_2020.dta
+
+rename prov1680 federalprovidernumber
+drop if missing(real(federalprovidernumber))
+
+destring federalprovidernumber, replace
+
+save Controls_cleaned_NH_2020.dta, replace
+
+* Merging with other facility controls
+clear
+use covid_nursinghomes_complete.dta 
+merge m:m federalprovidernumber using Controls_cleaned_NH_2020.dta 
+
+keep if _merge==3
+
+save covid_nursinghomes_complete.dta, replace 
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -409,7 +446,7 @@ save covid_nursinghomes_complete, replace
 
 
 *--------------------------------------------------------------------------------
-*Creating data for cross-sectional analysis
+*Creating data for cross-sectional analysis of forprofit effects on health outcomes
 *--------------------------------------------------------------------------------
 
 clear
@@ -476,10 +513,8 @@ gen neg = 1 if changeexcessdeaths < 0
 list if changeexcessdeaths < 0
 drop if changeexcessdeaths < 0
 
-
-
 * Merging with demographic variables
-
+drop _merge
 merge m:m fips using DemographicData_Complete.dta
 * Dropping counties that do not have nursing homes
 drop if _merge==2
@@ -496,16 +531,31 @@ gen log_coviddeaths = log(changecoviddeaths_perhundredbeds + 1)
 gen log_noncovid = log(changeexcessdeaths + 1)
 gen log_totaldeaths = log(changetotaldeaths_perhundredbeds + 1)
 
+* cleaning some controls
+replace alzunit = "1" if alzunit == "Yes"
+replace alzunit = "0" if alzunit == "No"
 
+destring alzunit, replace
+
+* alzunit hospbase
+
+
+replace pctalz_dem ="." if pctalz_dem == "LNE"
+destring pctalz_dem, replace
+
+merge m:1 federalprovidernumber using average_visits_reduction.dta
+
+gen staff_shortage = 0
+replace staff_shortage = 1 if shortageofnursingstaff == "Y" 
 
 * Saving data for each time period
 
 
 preserve 
 
-/*
-keep if date == 22171
 
+keep if date == 22171
+/*
 gen type = 1
 replace type = 2 if nonprofit == 1
 replace type = 3 if gov == 1
@@ -547,5 +597,319 @@ stafftotalcovid19deaths
 */
 
 
+
+
+
+
+
+*--------------------------------------------------------------------------------
+*Creating data for cross-sectional analysis of visitors data
+*--------------------------------------------------------------------------------
+
+clear
+use covid_nursinghomes_complete.dta 
+
+* Keeping relvent dates to create change variable
+keep if date == 22059| date == 22367 | date == 22724
+
+
+* Dropping missing variables ?
+drop if date == 22367 & date[_n-1] != 22059
+drop if date == 22724 & date[_n-1] != 22367
+
+
+
+foreach i in "numberofallbeds" "adjustedtotalnursestaffinghoursp" "adjustedtotalnursestaffinghoursp" {
+	
+replace `i' = `i'[_n-1] if `i' ==. & date == 22171 & date[_n-1] == 22059 & federalprovidernumber == federalprovidernumber[_n-1]
+replace `i' = `i'[_n-1] if `i' ==. & date == 22255 & date[_n-1] == 22171 & federalprovidernumber == federalprovidernumber[_n-1]
+replace `i' = `i'[_n-1] if `i' ==. & date == 22395 & date[_n-1] == 22255 & federalprovidernumber == federalprovidernumber[_n-1]
+replace `i' = `i'[_n-1] if `i' ==. & date == 22724 & date[_n-1] == 22395 & federalprovidernumber == federalprovidernumber[_n-1]
+
+replace `i' = `i'[_n+1] if `i' ==. & date == 22171 & date[_n+1] == 22255 & federalprovidernumber == federalprovidernumber[_n+1]
+replace `i' = `i'[_n+1] if `i' ==. & date == 22255 & date[_n+1] == 22395 & federalprovidernumber == federalprovidernumber[_n+1]
+replace `i' = `i'[_n+1] if `i' ==. & date == 22395 & date[_n+1] == 22724 & federalprovidernumber == federalprovidernumber[_n+1]
+}
+
+* Generating non-covid deaths data
+gen excessdeaths = totaldeaths - covid_deaths
+
+* Generating change in covid cases per capita at county
+gen change_countycasespcp = county_cases_pcp - county_cases_pcp[_n-1] if date == 22367 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+* Generating change in dependent variable of interest
+gen changeexcessdeaths = (excessdeaths - excessdeaths[_n-1])/numberofallbeds*100 if date == 22367 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changetotaldeaths_perhundredbeds = (totaldeaths - totaldeaths[_n-1])/numberofallbeds*100 if date == 22367 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changecoviddeaths_perhundredbeds = (covid_deaths- covid_deaths[_n-1])/numberofallbeds*100 if date == 22367 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changecovidcases_perhundredbeds = (residentstotalconfirmedcovid19 - residentstotalconfirmedcovid19[_n-1])/numberofallbeds*100 if date == 22367 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changestaffcases_FTWorkers = (stafftotalconfirmedcovid19- stafftotalconfirmedcovid19[_n-1])/(adjustedtotalnursestaffinghoursp*totalnumberofoccupiedbeds)*40*100 if date == 22367 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changestaffdeaths_FTWorkers = (stafftotalcovid19deaths - stafftotalcovid19deaths[_n-1])/(adjustedtotalnursestaffinghoursp*totalnumberofoccupiedbeds)*40*100 if date == 22367 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changestaffcases_perhundredbeds = (stafftotalconfirmedcovid19 - stafftotalconfirmedcovid19[_n-1])/numberofallbeds*100 if date == 22367 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changestaffdeaths_perhundredbeds = (stafftotalcovid19deaths - stafftotalcovid19deaths[_n-1])/numberofallbeds*100 if date == 22367 | date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+*checking for negative numbers
+count if changetotaldeaths_perhundredbeds<0
+count if changecoviddeaths_perhundredbeds<0
+count if changecovidcases_perhundredbeds<0
+count if changestaffcases_FTWorkers<0
+count if changestaffdeaths_FTWorkers<0
+count if changestaffcases_perhundredbeds<0
+count if changestaffdeaths_perhundredbeds<0
+
+* Some obersations do not report total deaths. Thus, I can not calculate non-Covid deaths. Thus, I delete these 7 nursing homes from the sample.
+sort federalprovidernumber date
+gen neg = 1 if changeexcessdeaths < 0
+list if changeexcessdeaths < 0
+drop if changeexcessdeaths < 0
+
+
+
+* Merging with demographic variables
+drop _merge
+merge m:m fips using DemographicData_Complete.dta
+* Dropping counties that do not have nursing homes
+drop if _merge==2
+drop _merge
+
+sort federalprovidernumber date
+
+* Dropping observations that changed ownership during the pandemic
+drop if ownership_changed == 1
+
+* reating log variables for robustness checks
+gen log_cases = log(changecovidcases_perhundredbeds + 1)
+gen log_coviddeaths = log(changecoviddeaths_perhundredbeds + 1)
+gen log_noncovid = log(changeexcessdeaths + 1)
+gen log_totaldeaths = log(changetotaldeaths_perhundredbeds + 1)
+
+* cleaning some controls
+replace agg_female ="." if agg_female == "LNE"
+destring agg_female, replace
+
+replace agg_u65 ="." if agg_u65 == "LNE"
+destring agg_u65, replace
+
+replace aggwhite_mds3 ="." if aggwhite_mds3 == "LNE"
+destring aggwhite_mds3, replace
+
+replace alzunit = "1" if alzunit == "Yes"
+replace alzunit = "0" if alzunit == "No"
+
+destring alzunit, replace
+
+gen interaction = alzunit*forprofit
+
+* alzunit hospbase
+
+
+replace pctalz_dem ="." if pctalz_dem == "LNE"
+destring pctalz_dem, replace
+
+replace aggblack_mds3 ="." if aggblack_mds3 == "LNE"
+destring aggblack_mds3, replace
+
+*gen interaction_2 = pctalz_dem*forprofit
+
+merge m:1 federalprovidernumber using average_visits_reduction.dta
+
+
+* Saving data for each time period
+
+drop if visitor_PctChange > 99
+drop if visitor_PctChange < -99
+
+gen isolation = (-1)*visitor_PctChange
+
+gen staff_shortage = 0
+replace staff_shortage = 1 if shortageofnursingstaff == "Y" 
+
+preserve 
+keep if date == 22367
+save VisitsAnalysis_March2021_Data, replace
+restore
+
+preserve 
+keep if date == 22724
+save VisitsAnalysis_March2022_Data, replace
+restore
+
+
+/*
+rename totalresidentconfirmedcovid19cas cases_perthousand
+rename totalresidentcovid19deathsper100 coviddeaths_perthousand
+
+totalresidentconfirmedcovid19cas
+totalresidentcovid19deathsper100
+
+totaldeaths = residents total deaths 
+
+stafftotalconfirmedcovid19
+stafftotalcovid19deaths
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*--------------------------------------------------------------------------------
+*Creating data for cross-sectional - total
+*--------------------------------------------------------------------------------
+
+clear
+use covid_nursinghomes_complete.dta 
+
+* Keeping relvent dates to create change variable
+keep if date == 22059 | date == 22724
+
+
+* Dropping missing variables ?
+drop if date == 22724 & date[_n-1] != 22059
+
+
+
+foreach i in "numberofallbeds" "adjustedtotalnursestaffinghoursp" "adjustedtotalnursestaffinghoursp" {
+	
+replace `i' = `i'[_n-1] if `i' ==. & date == 22171 & date[_n-1] == 22059 & federalprovidernumber == federalprovidernumber[_n-1]
+replace `i' = `i'[_n-1] if `i' ==. & date == 22255 & date[_n-1] == 22171 & federalprovidernumber == federalprovidernumber[_n-1]
+replace `i' = `i'[_n-1] if `i' ==. & date == 22395 & date[_n-1] == 22255 & federalprovidernumber == federalprovidernumber[_n-1]
+replace `i' = `i'[_n-1] if `i' ==. & date == 22724 & date[_n-1] == 22395 & federalprovidernumber == federalprovidernumber[_n-1]
+
+replace `i' = `i'[_n+1] if `i' ==. & date == 22171 & date[_n+1] == 22255 & federalprovidernumber == federalprovidernumber[_n+1]
+replace `i' = `i'[_n+1] if `i' ==. & date == 22255 & date[_n+1] == 22395 & federalprovidernumber == federalprovidernumber[_n+1]
+replace `i' = `i'[_n+1] if `i' ==. & date == 22395 & date[_n+1] == 22724 & federalprovidernumber == federalprovidernumber[_n+1]
+}
+
+* Generating non-covid deaths data
+gen excessdeaths = totaldeaths - covid_deaths
+
+* Generating change in covid cases per capita at county
+gen change_countycasespcp = county_cases_pcp - county_cases_pcp[_n-1] if date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+* Generating change in dependent variable of interest
+gen changeexcessdeaths = (excessdeaths - excessdeaths[_n-1])/numberofallbeds*100 if date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changetotaldeaths_perhundredbeds = (totaldeaths - totaldeaths[_n-1])/numberofallbeds*100 if date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changecoviddeaths_perhundredbeds = (covid_deaths- covid_deaths[_n-1])/numberofallbeds*100 if date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changecovidcases_perhundredbeds = (residentstotalconfirmedcovid19 - residentstotalconfirmedcovid19[_n-1])/numberofallbeds*100 if date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changestaffcases_FTWorkers = (stafftotalconfirmedcovid19- stafftotalconfirmedcovid19[_n-1])/(adjustedtotalnursestaffinghoursp*totalnumberofoccupiedbeds)*40*100 if date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changestaffdeaths_FTWorkers = (stafftotalcovid19deaths - stafftotalcovid19deaths[_n-1])/(adjustedtotalnursestaffinghoursp*totalnumberofoccupiedbeds)*40*100 if date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changestaffcases_perhundredbeds = (stafftotalconfirmedcovid19 - stafftotalconfirmedcovid19[_n-1])/numberofallbeds*100 if date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+gen changestaffdeaths_perhundredbeds = (stafftotalcovid19deaths - stafftotalcovid19deaths[_n-1])/numberofallbeds*100 if date == 22724 & federalprovidernumber == federalprovidernumber[_n-1]
+
+*checking for negative numbers
+count if changetotaldeaths_perhundredbeds<0
+count if changecoviddeaths_perhundredbeds<0
+count if changecovidcases_perhundredbeds<0
+count if changestaffcases_FTWorkers<0
+count if changestaffdeaths_FTWorkers<0
+count if changestaffcases_perhundredbeds<0
+count if changestaffdeaths_perhundredbeds<0
+
+* Some obersations do not report total deaths. Thus, I can not calculate non-Covid deaths. Thus, I delete these 7 nursing homes from the sample.
+sort federalprovidernumber date
+gen neg = 1 if changeexcessdeaths < 0
+list if changeexcessdeaths < 0
+drop if changeexcessdeaths < 0
+
+
+
+* Merging with demographic variables
+drop _merge
+merge m:m fips using DemographicData_Complete.dta
+* Dropping counties that do not have nursing homes
+drop if _merge==2
+drop _merge
+
+sort federalprovidernumber date
+
+* Dropping observations that changed ownership during the pandemic
+drop if ownership_changed == 1
+
+* reating log variables for robustness checks
+gen log_cases = log(changecovidcases_perhundredbeds + 1)
+gen log_coviddeaths = log(changecoviddeaths_perhundredbeds + 1)
+gen log_noncovid = log(changeexcessdeaths + 1)
+gen log_totaldeaths = log(changetotaldeaths_perhundredbeds + 1)
+
+* cleaning some controls
+replace agg_female ="." if agg_female == "LNE"
+destring agg_female, replace
+
+replace agg_u65 ="." if agg_u65 == "LNE"
+destring agg_u65, replace
+
+replace aggwhite_mds3 ="." if aggwhite_mds3 == "LNE"
+destring aggwhite_mds3, replace
+
+replace alzunit = "1" if alzunit == "Yes"
+replace alzunit = "0" if alzunit == "No"
+
+destring alzunit, replace
+
+gen interaction = alzunit*forprofit
+
+* alzunit hospbase
+
+
+replace pctalz_dem ="." if pctalz_dem == "LNE"
+destring pctalz_dem, replace
+
+replace aggblack_mds3 ="." if aggblack_mds3 == "LNE"
+destring aggblack_mds3, replace
+
+gen interaction_2 = pctalz_dem*forprofit
+
+merge m:1 federalprovidernumber using average_visits_reduction.dta
+
+
+* Saving data for each time period
+
+drop if visitor_PctChange > 99
+drop if visitor_PctChange < -99
+
+gen isolation = (-1)*visitor_PctChange
+gen staff_shortage = 0
+replace staff_shortage = 1 if shortageofnursingstaff == "Y" 
+
+
+preserve 
+keep if date == 22724
+save Visits_Total_Data, replace
+restore
 
 

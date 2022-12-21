@@ -1,16 +1,17 @@
-cd "C:\Users\vitor\OneDrive\Research_Resources\Covid_NursingHomes\Data"
+cd "C:\Users\vmelo\OneDrive\Research_Resources\Covid_NursingHomes\Data"
 
 clear
 use safegraph_merged
 
-collapse (mean) robustvisits_PctChange  (mean) visitor_PctChange, by(forprofit y m)
+collapse (mean) robustvisits_PctChange  (mean) visitor_PctChange, by(y m)
 drop if y < 2020 
 drop if y > 2021
-drop if m < 4 & y == 2020
+drop if m < 3 & y == 2020
+drop if m > 8 & y == 2021
 
-drop if forprofit == .
+*drop if forprofit == .
 
-outsheet using patterns_graph.csv, comma
+outsheet using overall_patterns_graph.csv, comma
 
 
 
